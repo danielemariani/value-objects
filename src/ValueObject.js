@@ -1,13 +1,17 @@
 
+const adaptProvidedProperties = require('./adaptProvidedProperties');
+
 class ValueObject {
 
   constructor(aMapOfProperties) {
-    let providedProperties = processProvidedProperties(
+    let instance = this;
+
+    let providedProperties = adaptProvidedProperties(
       aMapOfProperties
     );
 
-    addPropertiesToValueObjectInstance(
-      this,
+    addPropertiesToInstance(
+      instance,
       providedProperties
     );
 
@@ -21,112 +25,35 @@ class ValueObject {
       return JSON.stringify(propertiesMap);
     }
 
+    function equals(aValueObject) {
+      if (!isValueObject(aValueObject)) {
+        return false;
+      }
+
+      return instance.serialize() === aValueObject.serialize();
+    }
+
     return makeValueImmutable(
-      Object.assign(this, { serialize })
+      Object.assign(instance, { serialize, equals })
     );
   }
 }
 
-function processProvidedProperties(
-  aMapOfProperties
-) {
-
-  return Object
-    .entries(aMapOfProperties)
-    .map(processProvidedProperty);
-
-  function processProvidedProperty(aPropertyEntry) {
-    let propertyName = aPropertyEntry[0];
-    let propertyValue = aPropertyEntry[1];
-
-    let propertyDescriptor = adaptProvidedPropertyToDescriptorObject(
-      propertyName,
-      propertyValue
-    );
-
-    return propertyDescriptor;
-  }
+function isValueObject(aMaybeValueObject) {
+  return aMaybeValueObject instanceof ValueObject;
 }
 
-function addPropertiesToValueObjectInstance(aValueObject, aListOfPropertiesDescriptors) {
+function addPropertiesToInstance(aValueObject, aListOfPropertiesDescriptors) {
   aListOfPropertiesDescriptors
     .forEach(aPropertyDescriptor => {
-      addPropertyToValueObjectInstance(
+      addPropertyToInstance(
         aValueObject,
         aPropertyDescriptor
       );
     });
 }
 
-function adaptProvidedPropertyToDescriptorObject(
-  aPropertyName,
-  aPropertyDescriptor
-) {
-
-  return {
-    name: aPropertyName,
-    value: extractPropertyValueFromDescriptor(
-      aPropertyName,
-      aPropertyDescriptor
-    ),
-    validator: extractPropertyValidatorFromDescriptor(
-      aPropertyDescriptor
-    )
-  };
-}
-
-function extractPropertyValueFromDescriptor(
-  aPropertyName,
-  aProvidedProperty
-) {
-
-  if (isPropertyASimpleValue(aProvidedProperty)) {
-    return aProvidedProperty;
-  }
-
-  if (isPropertyADescriptorObject(aProvidedProperty)) {
-    return aProvidedProperty.value;
-  }
-
-  throw new TypeError(`ValueObject was provided a invalid property "${aPropertyName}"`);
-}
-
-function isPropertyASimpleValue(aProvidedProperty) {
-  return typeof aProvidedProperty !== 'object';
-}
-
-function isPropertyADescriptorObject(aProvidedProperty) {
-  return (
-    typeof aProvidedProperty === 'object' &&
-    typeof aProvidedProperty.value !== 'undefined'
-  );
-}
-
-function extractPropertyValidatorFromDescriptor(aPropertyDescriptor) {
-  let defaultValidator = function emptyValidator() {
-    return true;
-  };
-
-  if (isAFunction(aPropertyDescriptor.validator)) {
-    return aPropertyDescriptor.validator;
-  }
-
-  if (isNotDefined(aPropertyDescriptor.validator)) {
-    return defaultValidator;
-  }
-
-  throw new TypeError(`ValueObject was provided a invalid validator for property "${aPropertyDescriptor.name}"`);
-}
-
-function isAFunction(aMaybeFunction) {
-  return typeof aMaybeFunction === 'function';
-}
-
-function isNotDefined(aValue) {
-  return typeof aValue === 'undefined';
-}
-
-function addPropertyToValueObjectInstance(
+function addPropertyToInstance(
   aValueObject,
   aPropertyDescriptor
 ) {
@@ -147,7 +74,7 @@ function validateProperty(aPropertyDescriptor) {
   let propertyValidator = aPropertyDescriptor.validator;
 
   if (propertyValidator(propertyValue) !== true) {
-    throw new TypeError(`ValueObject was provided an invalid value for property "${propertyName}", value: "${propertyValue}"`);
+    throw new TypeError(`ValueObject was provided an invalid value for property "${propertyName}", value: "${propertyValue}" did not pass the property validation`);
   }
 }
 

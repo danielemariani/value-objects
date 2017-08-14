@@ -184,4 +184,50 @@ describe('ValueObject', () => {
     });
   });
 
+  describe('when required to compare to another object', () => {
+    describe('when the other object is not a ValueObject', () => {
+      it('the comparison should fail', () => {
+        let valueObject = new ValueObject({
+          aProperty: 'VALUE'
+        });
+
+        let anotherObject = { aProperty: 'VALUE' };
+
+        expect(valueObject.equals(anotherObject))
+          .toBe(false);
+      });
+    });
+
+    describe('when the other object is a ValueObject', () => {
+      describe('and has the same value', () => {
+        it('the comparison should pass', () => {
+          let valueObject = new ValueObject({
+            aProperty: 'VALUE'
+          });
+
+          let anotherObject = new ValueObject({
+            aProperty: 'VALUE'
+          });
+
+          expect(valueObject.equals(anotherObject))
+            .toBe(true);
+        });
+      });
+
+      describe('and has NOT the same value', () => {
+        it('the comparison should fail', () => {
+          let valueObject = new ValueObject({
+            aProperty: 'VALUE'
+          });
+
+          let anotherObject = new ValueObject({
+            aProperty: 'ANOTHER_VALUE'
+          });
+
+          expect(valueObject.equals(anotherObject))
+            .toBe(false);
+        });
+      });
+    });
+  });
 });
