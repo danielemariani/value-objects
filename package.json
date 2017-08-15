@@ -1,7 +1,7 @@
 {
-  "name": "domain-value-objects",
+  "name": "value-objects",
   "version": "0.0.0",
-  "description": "A js library to create immutable value objects",
+  "description": "A js library to work with immutable value objects",
   "main": "src",
   "scripts": {
     "test": "./node_modules/.bin/jest ./src --coverage --watchAll",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/danielemariani/domain-value-objects"
+    "url": "https://github.com/danielemariani/value-objects"
   },
   "devDependencies": {
     "coveralls": "^2.13.1",
