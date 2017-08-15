@@ -34,16 +34,19 @@ class ValueObject {
     }
 
     return makeValueImmutable(
-      Object.assign(instance, { serialize, equals })
+      Object.assign(instance, {
+        serialize,
+        equals
+      })
     );
   }
 }
 
-function isValueObject(aMaybeValueObject) {
-  return aMaybeValueObject instanceof ValueObject;
-}
+function addPropertiesToInstance(
+  aValueObject,
+  aListOfPropertiesDescriptors
+) {
 
-function addPropertiesToInstance(aValueObject, aListOfPropertiesDescriptors) {
   aListOfPropertiesDescriptors
     .forEach(aPropertyDescriptor => {
       addPropertyToInstance(
@@ -93,6 +96,10 @@ function addPropertyGetterToInstance(
 
 function makeValueImmutable(aValue) {
   return Object.freeze(aValue);
+}
+
+function isValueObject(aMaybeValueObject) {
+  return aMaybeValueObject instanceof ValueObject;
 }
 
 module.exports = ValueObject;
