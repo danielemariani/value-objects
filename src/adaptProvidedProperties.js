@@ -1,4 +1,8 @@
 
+const DEFAULT_VALIDATOR = function defaultValidator() {
+  return true;
+};
+
 function adaptProvidedProperties(providedProperties) {
   return Object
     .entries(providedProperties)
@@ -7,44 +11,43 @@ function adaptProvidedProperties(providedProperties) {
 
 function processProperty(aPropertyEntry) {
   let propertyName = aPropertyEntry[0];
-  let propertyValue = aPropertyEntry[1];
+  let providedPropertyValue = aPropertyEntry[1];
 
-  let propertyDescriptor = adaptPropertyToDescriptorObject(
+  return adaptPropertyToDescriptor(
     propertyName,
-    propertyValue
+    providedPropertyValue
   );
-
-  return propertyDescriptor;
 }
 
-function adaptPropertyToDescriptorObject(
+function adaptPropertyToDescriptor(
   aPropertyName,
-  aPropertyDescriptor
+  aProvidedPropertyValue
 ) {
 
   return {
     name: aPropertyName,
-    value: extractPropertyValueFromDescriptor(
+    value: extractPropertyValue(
       aPropertyName,
-      aPropertyDescriptor
+      aProvidedPropertyValue
     ),
-    validator: extractPropertyValidatorFromDescriptor(
-      aPropertyDescriptor
+    validator: extractPropertyValidator(
+      aPropertyName,
+      aProvidedPropertyValue
     )
   };
 }
 
-function extractPropertyValueFromDescriptor(
+function extractPropertyValue(
   aPropertyName,
-  aProvidedProperty
+  aProvidedPropertyValue
 ) {
 
-  if (isPropertyASimpleValue(aProvidedProperty)) {
-    return aProvidedProperty;
+  if (isPropertyASimpleValue(aProvidedPropertyValue)) {
+    return aProvidedPropertyValue;
   }
 
-  if (isPropertyADescriptorObject(aProvidedProperty)) {
-    return aProvidedProperty.value;
+  if (isPropertyADescriptorObject(aProvidedPropertyValue)) {
+    return aProvidedPropertyValue.value;
   }
 
   throw new TypeError(`ValueObject was provided a invalid property "${aPropertyName}"`);
@@ -61,20 +64,20 @@ function isPropertyADescriptorObject(aProvidedProperty) {
   );
 }
 
-function extractPropertyValidatorFromDescriptor(aPropertyDescriptor) {
-  let defaultValidator = function emptyValidator() {
-    return true;
-  };
+function extractPropertyValidator(
+  aPropertyName,
+  aProvidedPropertyValue
+) {
 
-  if (isAFunction(aPropertyDescriptor.validator)) {
-    return aPropertyDescriptor.validator;
+  if (isAFunction(aProvidedPropertyValue.validator)) {
+    return aProvidedPropertyValue.validator;
   }
 
-  if (isNotDefined(aPropertyDescriptor.validator)) {
-    return defaultValidator;
+  if (isNotDefined(aProvidedPropertyValue.validator)) {
+    return DEFAULT_VALIDATOR;
   }
 
-  throw new TypeError(`ValueObject was provided a invalid validator for property "${aPropertyDescriptor.name}"`);
+  throw new TypeError(`ValueObject was provided a invalid validator for property "${aPropertyName}"`);
 }
 
 function isAFunction(aMaybeFunction) {

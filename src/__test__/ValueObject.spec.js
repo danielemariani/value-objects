@@ -4,113 +4,61 @@
 const ValueObject = require('../ValueObject');
 
 describe('ValueObject', () => {
+  let valueObject;
+
   describe('when provided a property', () => {
-    describe('and the property is a simple value', () => {
-      it('should set the property with the provided value', () => {
-        let valueObject = new ValueObject({
-          aProperty: 'VALUE'
+    describe('and the property as a validator function', () => {
+      let aPropertyValidator;
+
+      beforeEach(() => {
+        aPropertyValidator = jest.fn();
+
+        aPropertyValidator
+          .mockReturnValue(true);
+      });
+
+      it('should call the validator when setting the property value', () => {
+        valueObject = new ValueObject({
+          aProperty: {
+            value: 'VALUE',
+            validator: aPropertyValidator
+          }
         });
 
-        expect(valueObject.aProperty())
-          .toEqual('VALUE');
+        expect(aPropertyValidator)
+          .toHaveBeenCalledWith('VALUE');
       });
-    });
 
-    describe('and the property is a "descriptor" object', () => {
-      describe('and the property descriptor has NOT a "value" attribute', () => {
+      describe('and the validator function returns "true"', () => {
+        it('should set the value', () => {
+          valueObject = new ValueObject({
+            aProperty: {
+              value: 'VALUE',
+              validator: aPropertyValidator
+            }
+          });
+
+          expect(valueObject.aProperty())
+            .toBe('VALUE');
+        });
+      });
+
+      describe('and the validator function does NOT return "true"', () => {
+        beforeEach(() => {
+          aPropertyValidator
+            .mockReturnValue(false);
+        });
+
         it('should throw a TypeError', () => {
           expect(() => {
             new ValueObject({
-              aProperty: { a: 'a' }
+              aProperty: {
+                value: 'VALUE',
+                validator: aPropertyValidator
+              }
             });
           })
             .toThrow(TypeError);
-        });
-      });
-
-      describe('and the property descriptor has a "value" attribute', () => {
-        describe('and the property descriptor has NOT a validator property', () => {
-          it('should not validate the property value', () => {
-            let valueObject = new ValueObject({
-              aProperty: { value: 'VALUE' }
-            });
-
-            expect(valueObject.aProperty())
-              .toEqual('VALUE');
-          });
-        });
-
-        describe('and the property descriptor has a validator property', () => {
-          let valueObject;
-          let aPropertyValidator;
-
-          beforeEach(() => {
-            aPropertyValidator = jest.fn();
-
-            aPropertyValidator
-              .mockReturnValue(true);
-          });
-
-          describe('and the validator property is a function', () => {
-            it('should call the validator when setting the property value', () => {
-              valueObject = new ValueObject({
-                aProperty: {
-                  value: 'VALUE',
-                  validator: aPropertyValidator
-                }
-              });
-
-              expect(aPropertyValidator)
-                .toHaveBeenCalledWith('VALUE');
-            });
-
-            describe('and the validator function returns "true"', () => {
-              it('should set the value', () => {
-                valueObject = new ValueObject({
-                  aProperty: {
-                    value: 'VALUE',
-                    validator: aPropertyValidator
-                  }
-                });
-
-                expect(valueObject.aProperty())
-                  .toBe('VALUE');
-              });
-            });
-
-            describe('and the validator function does NOT return "true"', () => {
-              beforeEach(() => {
-                aPropertyValidator
-                  .mockReturnValue(false);
-              });
-
-              it('should throw a TypeError', () => {
-                expect(() => {
-                  new ValueObject({
-                    aProperty: {
-                      value: 'VALUE',
-                      validator: aPropertyValidator
-                    }
-                  });
-                })
-                  .toThrow(TypeError);
-              });
-            });
-          });
-
-          describe('and the validator property is NOT a function', () => {
-            it('should throw a TypeError', () => {
-              expect(() => {
-                new ValueObject({
-                  aProperty: {
-                    value: 'VALUE',
-                    validator: {}
-                  }
-                });
-              })
-                .toThrow(TypeError);
-            });
-          });
         });
       });
     });

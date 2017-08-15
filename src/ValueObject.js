@@ -3,23 +3,23 @@ const adaptProvidedProperties = require('./adaptProvidedProperties');
 
 class ValueObject {
 
-  constructor(aMapOfProperties) {
+  constructor(aMapOfProvidedProperties) {
     let instance = this;
 
-    let providedProperties = adaptProvidedProperties(
-      aMapOfProperties
+    let adaptedProperties = adaptProvidedProperties(
+      aMapOfProvidedProperties
     );
 
     addPropertiesToInstance(
       instance,
-      providedProperties
+      adaptedProperties
     );
 
     function serialize() {
       let propertiesMap = {};
 
-      providedProperties.forEach(aProvidedProperty => {
-        propertiesMap[aProvidedProperty.name] = aProvidedProperty.value;
+      adaptedProperties.forEach(aProperty => {
+        propertiesMap[aProperty.name] = aProperty.value;
       });
 
       return JSON.stringify(propertiesMap);
@@ -62,7 +62,7 @@ function addPropertyToInstance(
     aPropertyDescriptor
   );
 
-  addPropertyGetterToObject(
+  addPropertyGetterToInstance(
     aValueObject,
     aPropertyDescriptor
   );
@@ -78,7 +78,7 @@ function validateProperty(aPropertyDescriptor) {
   }
 }
 
-function addPropertyGetterToObject(
+function addPropertyGetterToInstance(
   aObject,
   aPropertyDescriptor
 ) {
