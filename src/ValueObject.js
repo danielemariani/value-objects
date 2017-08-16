@@ -1,6 +1,7 @@
 
 const adaptPropertiesToJSON = require('./adapters/adaptPropertiesToJSON');
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
+const compareValueObjects = require('./usecases/compareValueObjects');
 
 class ValueObject {
 
@@ -24,11 +25,10 @@ class ValueObject {
         },
 
         equals(aValueObject) {
-          if (!isValueObject(aValueObject)) {
-            return false;
-          }
-
-          return this.serialize() === aValueObject.serialize();
+          return compareValueObjects(
+            this,
+            aValueObject
+          );
         }
       })
     );
@@ -89,10 +89,6 @@ function addPropertyGetterToInstance(
 
 function makeValueImmutable(aValue) {
   return Object.freeze(aValue);
-}
-
-function isValueObject(aMaybeValueObject) {
-  return aMaybeValueObject instanceof ValueObject;
 }
 
 module.exports = ValueObject;
