@@ -1,5 +1,5 @@
 
-const matchers = require('./helpers/matchers');
+const matchers = require('../helpers/matchers');
 
 const DEFAULT_VALIDATOR = function defaultValidator() {
   return true;

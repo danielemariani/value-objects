@@ -1,5 +1,5 @@
 
-const adaptProvidedProperties = require('./adaptProvidedProperties');
+const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 
 class ValueObject {
 
