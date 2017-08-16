@@ -8,10 +8,10 @@ const DEFAULT_VALIDATOR = function defaultValidator() {
 function adaptProvidedProperties(providedProperties) {
   return Object
     .entries(providedProperties)
-    .map(processProperty);
+    .map(adaptPropertyEntry);
 }
 
-function processProperty(aPropertyEntry) {
+function adaptPropertyEntry(aPropertyEntry) {
   let propertyName = aPropertyEntry[0];
   let providedPropertyValue = aPropertyEntry[1];
 

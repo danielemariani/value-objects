@@ -10,10 +10,8 @@ class ValueObject {
       aMapOfProvidedProperties
     );
 
-    addPropertiesToInstance(
-      this,
-      listOfAdaptedProperties
-    );
+    addPropertiesToInstance
+      .call(this, listOfAdaptedProperties);
 
     return makeValueImmutable(
       Object.assign(this, {
@@ -35,33 +33,16 @@ class ValueObject {
   }
 }
 
-function addPropertiesToInstance(
-  aValueObject,
+function addPropertiesToInstance(aListOfPropertiesDescriptors) {
   aListOfPropertiesDescriptors
-) {
-
-  aListOfPropertiesDescriptors
-    .forEach(aPropertyDescriptor => {
-      addPropertyToInstance(
-        aValueObject,
-        aPropertyDescriptor
-      );
-    });
+    .forEach(addPropertyToInstance.bind(this));
 }
 
-function addPropertyToInstance(
-  aValueObject,
-  aPropertyDescriptor
-) {
+function addPropertyToInstance(aPropertyDescriptor) {
+  validateProperty(aPropertyDescriptor);
 
-  validateProperty(
-    aPropertyDescriptor
-  );
-
-  addPropertyGetterToInstance(
-    aValueObject,
-    aPropertyDescriptor
-  );
+  addPropertyGetterToInstance
+    .call(this, aPropertyDescriptor);
 }
 
 function validateProperty(aPropertyDescriptor) {
@@ -74,15 +55,11 @@ function validateProperty(aPropertyDescriptor) {
   }
 }
 
-function addPropertyGetterToInstance(
-  aObject,
-  aPropertyDescriptor
-) {
-
+function addPropertyGetterToInstance(aPropertyDescriptor) {
   let propertyName = aPropertyDescriptor.name;
   let propertyValue = makeValueImmutable(aPropertyDescriptor.value);
 
-  Object.defineProperty(aObject, propertyName, {
+  Object.defineProperty(this, propertyName, {
     value: () => { return propertyValue; }
   });
 }
@@ -92,3 +69,4 @@ function makeValueImmutable(aValue) {
 }
 
 module.exports = ValueObject;
+

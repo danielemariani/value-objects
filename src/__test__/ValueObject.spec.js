@@ -133,49 +133,24 @@ describe('ValueObject', () => {
   });
 
   describe('when required to compare to another object', () => {
-    describe('when the other object is not a ValueObject', () => {
-      it('the comparison should fail', () => {
-        let valueObject = new ValueObject({
-          aProperty: 'VALUE'
-        });
-
-        let anotherObject = { aProperty: 'VALUE' };
-
-        expect(valueObject.equals(anotherObject))
-          .toBe(false);
-      });
-    });
-
-    describe('when the other object is a ValueObject', () => {
-      describe('and has the same value', () => {
-        it('the comparison should pass', () => {
-          let valueObject = new ValueObject({
-            aProperty: 'VALUE'
-          });
-
-          let anotherObject = new ValueObject({
-            aProperty: 'VALUE'
-          });
-
-          expect(valueObject.equals(anotherObject))
-            .toBe(true);
-        });
+    it('should delegate the comparison to the "compare" use case', () => {
+      let valueObject = new ValueObject({
+        aProperty: 'VALUE'
       });
 
-      describe('and has NOT the same value', () => {
-        it('the comparison should fail', () => {
-          let valueObject = new ValueObject({
-            aProperty: 'VALUE'
-          });
-
-          let anotherObject = new ValueObject({
-            aProperty: 'ANOTHER_VALUE'
-          });
-
-          expect(valueObject.equals(anotherObject))
-            .toBe(false);
-        });
+      let aNotEqualObject = new ValueObject({
+        aProperty: 'ANOTHER_VALUE'
       });
+
+      let aEqualObject = new ValueObject({
+        aProperty: 'VALUE'
+      });
+
+      expect(valueObject.equals(aNotEqualObject))
+        .toBe(false);
+
+      expect(valueObject.equals(aEqualObject))
+        .toBe(true);
     });
   });
 });
