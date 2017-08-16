@@ -1,7 +1,7 @@
 
-const adaptPropertiesToJSON = require('./adapters/adaptPropertiesToJSON');
-const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 const compareValueObjects = require('./usecases/compareValueObjects');
+const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
+const adaptPropertiesToPlainObject = require('./adapters/adaptPropertiesToPlainObject');
 
 class ValueObject {
 
@@ -17,8 +17,10 @@ class ValueObject {
       Object.assign(this, {
 
         serialize() {
-          return adaptPropertiesToJSON(
-            listOfAdaptedProperties
+          return JSON.stringify(
+            adaptPropertiesToPlainObject(
+              listOfAdaptedProperties
+            )
           );
         },
 
@@ -26,6 +28,18 @@ class ValueObject {
           return compareValueObjects(
             this,
             aValueObject
+          );
+        },
+
+        // @override
+        toJSON() {
+          return JSON.parse(this.serialize());
+        },
+
+        // @override
+        valueOf() {
+          return adaptPropertiesToPlainObject(
+            listOfAdaptedProperties
           );
         }
       })
@@ -51,7 +65,8 @@ function validateProperty(aPropertyDescriptor) {
   let propertyValidator = aPropertyDescriptor.validator;
 
   if (propertyValidator(propertyValue) !== true) {
-    throw new TypeError(`ValueObject was provided an invalid value for property "${propertyName}", value: "${propertyValue}" did not pass the property validation`);
+    throw new TypeError(`ValueObject was provided an invalid value for property "${propertyName}",\
+      value: "${propertyValue}" did not pass the property validation`);
   }
 }
 

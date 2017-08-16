@@ -132,6 +132,33 @@ describe('ValueObject', () => {
     });
   });
 
+  describe('when passed to JSON.stringify() method', () => {
+    it('should serialize as expected', () => {
+      let valueObject = new ValueObject({
+        aProperty: 'VALUE',
+        anotherProperty: { value: { a: '12' } }
+      });
+
+      expect(JSON.stringify(valueObject))
+        .toBe(valueObject.serialize());
+    });
+  });
+
+  describe('when evaluationg the valueOf() of the ValueObject', () => {
+    it('should return the object value', () => {
+      let valueObject = new ValueObject({
+        aProperty: 'VALUE',
+        anotherProperty: { value: { a: '12' }, validator: () => { return true; } }
+      });
+
+      expect(valueObject.valueOf())
+        .toEqual({
+          aProperty: 'VALUE',
+          anotherProperty: { a: '12' }
+        });
+    });
+  });
+
   describe('when required to compare to another object', () => {
     it('should delegate the comparison to the "compare" use case', () => {
       let valueObject = new ValueObject({

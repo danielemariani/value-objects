@@ -1,12 +1,12 @@
 
-function adaptPropertiesToJSON(aListOfProperties) {
+function adaptPropertiesToPlainObject(aListOfProperties) {
   let propertiesMap = {};
 
   aListOfProperties.forEach(aProperty => {
     propertiesMap[aProperty.name] = aProperty.value;
   });
 
-  return JSON.stringify(propertiesMap);
+  return propertiesMap;
 }
 
-module.exports = adaptPropertiesToJSON;
+module.exports = adaptPropertiesToPlainObject;
