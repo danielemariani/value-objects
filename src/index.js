@@ -1,4 +1,6 @@
 
 const ValueObject = require('./ValueObject');
 
-module.exports = ValueObject;
+module.exports = {
+  ValueObject
+};
