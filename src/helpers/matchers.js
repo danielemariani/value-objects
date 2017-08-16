@@ -1,14 +1,22 @@
 
-function isFunction(aMaybeFunction) {
-  return typeof aMaybeFunction === 'function';
-}
-
-function isArray(aMaybeArray) {
-  return Object.prototype.toString.call(aMaybeArray) === '[object Array]';
+function isFunction(aValue) {
+  return typeof aValue === 'function';
 }
 
 function isObject(aValue) {
-  return typeof aValue === 'object';
+  return (
+    typeof aValue === 'object' &&
+    !isArray(aValue) &&
+    !isNull(aValue)
+  );
+}
+
+function isArray(aValue) {
+  return Object.prototype.toString.call(aValue) === '[object Array]';
+}
+
+function isNull(aValue) {
+  return aValue === null;
 }
 
 function isDefined(aValue) {
@@ -21,8 +29,8 @@ function isNotDefined(aValue) {
 
 function isSimpleValue(aValue) {
   return (
-    typeof aValue !== 'object' ||
-    isArray(aValue)
+    !isObject(aValue) &&
+    !isFunction(aValue)
   );
 }
 
@@ -30,6 +38,7 @@ module.exports = {
   isFunction,
   isObject,
   isArray,
+  isNull,
   isDefined,
   isNotDefined,
   isSimpleValue
