@@ -1,14 +1,11 @@
 
-const matchers = require('./helpers/matchers');
+const validateProperty = require('./usecases/validateProperty');
 const compareValueObjects = require('./usecases/compareValueObjects');
+
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 const adaptPropertiesToPlainObject = require('./adapters/adaptPropertiesToPlainObject');
 
 const PRIVATES = Symbol('__privates__');
-
-const DEFAULT_VALIDATOR = function defaultValidator() {
-  return true;
-};
 
 class ValueObject {
 
@@ -86,39 +83,10 @@ function addPropertiesToInstance(aListOfPropertiesDescriptors) {
 }
 
 function addPropertyToInstance(aPropertyDescriptor) {
-  validateProperty
-    .call(this, aPropertyDescriptor);
+  validateProperty(this, aPropertyDescriptor);
 
   addPropertyGetterToInstance
     .call(this, aPropertyDescriptor);
-}
-
-function validateProperty(aPropertyDescriptor) {
-  let propertyName = aPropertyDescriptor.name;
-  let propertyValue = aPropertyDescriptor.value;
-
-  let propertyValidator = getValidatorForProperty
-    .call(this, propertyName);
-
-  if (propertyValidator(propertyValue) !== true) {
-    throw new TypeError(`ValueObject was provided an invalid value for property "${propertyName}",\
-      value: "${propertyValue}" did not pass the property validation`);
-  }
-}
-
-function getValidatorForProperty(aPropertyName) {
-  let validators = getValidators.call(this);
-  let validator = validators[aPropertyName];
-
-  if (matchers.isFunction(validator)) {
-    return validator;
-  }
-
-  return DEFAULT_VALIDATOR;
-}
-
-function getValidators() {
-  return this.constructor.validators();
 }
 
 function addPropertyGetterToInstance(aPropertyDescriptor) {

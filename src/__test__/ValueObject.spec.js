@@ -13,6 +13,7 @@ describe('ValueObject', () => {
 
       valueObject.property = 'ANOTHER_VALUE';
       valueObject.anotherProperty().a = 13;
+      valueObject.newProperty = 'NEW';
 
       expect(valueObject.aProperty())
         .toEqual('VALUE');

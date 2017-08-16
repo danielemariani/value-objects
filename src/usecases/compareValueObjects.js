@@ -12,5 +12,5 @@ function compareValueObjects(aValue, anotherValue) {
   return aValue.serialize() === anotherValue.serialize();
 }
 
-
 module.exports = compareValueObjects;
+
