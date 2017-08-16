@@ -1,4 +1,6 @@
 
+require('./polyfills/objectEntriesPolyfill');
+
 const compareValueObjects = require('./usecases/compareValueObjects');
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 const adaptPropertiesToPlainObject = require('./adapters/adaptPropertiesToPlainObject');
