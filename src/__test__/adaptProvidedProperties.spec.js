@@ -27,12 +27,13 @@ describe('Function adaptProvidedProperties', () => {
 
       describe('and the property is a simple value', () => {
         it('should use the provided value as the property value', () => {
-          let aMapOfProperties = { aProperty: 'VALUE' };
+          let aMapOfProperties = { aProperty: 'VALUE', anotherProperty: ['a', 'b', 'c'] };
           let adaptedProperties = adapt(aMapOfProperties);
 
           expect(adaptedProperties)
             .toEqual([
-              expect.objectContaining({ value: 'VALUE' })
+              expect.objectContaining({ value: 'VALUE' }),
+              expect.objectContaining({ value: ['a', 'b', 'c'] })
             ]);
         });
       });

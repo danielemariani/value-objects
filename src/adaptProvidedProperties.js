@@ -1,4 +1,6 @@
 
+const matchers = require('./helpers/matchers');
+
 const DEFAULT_VALIDATOR = function defaultValidator() {
   return true;
 };
@@ -54,13 +56,13 @@ function extractPropertyValue(
 }
 
 function isPropertyASimpleValue(aProvidedProperty) {
-  return typeof aProvidedProperty !== 'object';
+  return matchers.isSimpleValue(aProvidedProperty);
 }
 
 function isPropertyADescriptorObject(aProvidedProperty) {
   return (
-    typeof aProvidedProperty === 'object' &&
-    typeof aProvidedProperty.value !== 'undefined'
+    matchers.isObject(aProvidedProperty) &&
+    matchers.isDefined(aProvidedProperty.value)
   );
 }
 
@@ -69,23 +71,15 @@ function extractPropertyValidator(
   aProvidedPropertyValue
 ) {
 
-  if (isAFunction(aProvidedPropertyValue.validator)) {
+  if (matchers.isFunction(aProvidedPropertyValue.validator)) {
     return aProvidedPropertyValue.validator;
   }
 
-  if (isNotDefined(aProvidedPropertyValue.validator)) {
+  if (matchers.isNotDefined(aProvidedPropertyValue.validator)) {
     return DEFAULT_VALIDATOR;
   }
 
   throw new TypeError(`ValueObject was provided a invalid validator for property "${aPropertyName}"`);
-}
-
-function isAFunction(aMaybeFunction) {
-  return typeof aMaybeFunction === 'function';
-}
-
-function isNotDefined(aValue) {
-  return typeof aValue === 'undefined';
 }
 
 module.exports = adaptProvidedProperties;
