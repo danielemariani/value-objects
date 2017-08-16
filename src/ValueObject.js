@@ -1,42 +1,35 @@
 
+const adaptPropertiesToJSON = require('./adapters/adaptPropertiesToJSON');
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 
 class ValueObject {
 
   constructor(aMapOfProvidedProperties) {
-    let instance = this;
-
-    let adaptedProperties = adaptProvidedProperties(
+    let listOfAdaptedProperties = adaptProvidedProperties(
       aMapOfProvidedProperties
     );
 
     addPropertiesToInstance(
-      instance,
-      adaptedProperties
+      this,
+      listOfAdaptedProperties
     );
 
-    function serialize() {
-      let propertiesMap = {};
-
-      adaptedProperties.forEach(aProperty => {
-        propertiesMap[aProperty.name] = aProperty.value;
-      });
-
-      return JSON.stringify(propertiesMap);
-    }
-
-    function equals(aValueObject) {
-      if (!isValueObject(aValueObject)) {
-        return false;
-      }
-
-      return instance.serialize() === aValueObject.serialize();
-    }
-
     return makeValueImmutable(
-      Object.assign(instance, {
-        serialize,
-        equals
+      Object.assign(this, {
+
+        serialize() {
+          return adaptPropertiesToJSON(
+            listOfAdaptedProperties
+          );
+        },
+
+        equals(aValueObject) {
+          if (!isValueObject(aValueObject)) {
+            return false;
+          }
+
+          return this.serialize() === aValueObject.serialize();
+        }
       })
     );
   }
