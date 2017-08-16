@@ -17,5 +17,8 @@
     "coveralls": "^2.13.1",
     "jest": "^19.0.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "es6-symbol": "^3.1.1",
+    "es7-object-polyfill": "0.0.5"
+  }
 }

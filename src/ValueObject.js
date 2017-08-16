@@ -3,9 +3,13 @@ const compareValueObjects = require('./usecases/compareValueObjects');
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 const adaptPropertiesToPlainObject = require('./adapters/adaptPropertiesToPlainObject');
 
+const PRIVATES = Symbol('__privates__');
+
 class ValueObject {
 
-  constructor(aMapOfProvidedProperties) {
+  constructor(aMapOfProvidedProperties = {}) {
+    let mapOfProvidedProperties = aMapOfProvidedProperties;
+
     let listOfAdaptedProperties = adaptProvidedProperties(
       aMapOfProvidedProperties
     );
@@ -14,45 +18,49 @@ class ValueObject {
       adaptPropertiesToPlainObject(listOfAdaptedProperties)
     );
 
+    this[PRIVATES] = {
+      mapOfProvidedProperties,
+      listOfAdaptedProperties,
+      mapOfAdaptedProperties
+    };
+
     addPropertiesToInstance
       .call(this, listOfAdaptedProperties);
+  }
 
-    return makeValueImmutable(
-      Object.assign(this, {
-
-        serialize() {
-          return JSON.stringify(
-            mapOfAdaptedProperties
-          );
-        },
-
-        equals(aValueObject) {
-          return compareValueObjects(
-            this,
-            aValueObject
-          );
-        },
-
-        withValues(aNewMapOfProvidedProperties) {
-          return new this.constructor(
-            mergeObjects(
-              aMapOfProvidedProperties,
-              aNewMapOfProvidedProperties
-            )
-          );
-        },
-
-        // @override
-        toJSON() {
-          return mapOfAdaptedProperties;
-        },
-
-        // @override
-        valueOf() {
-          return mapOfAdaptedProperties;
-        }
-      })
+  serialize() {
+    return JSON.stringify(
+      this[PRIVATES].mapOfAdaptedProperties
     );
+  }
+
+  equals(aValueObject) {
+    return compareValueObjects(
+      this,
+      aValueObject
+    );
+  }
+
+  withValues(aMapOfProvidedProperties) {
+    let mergedProperties = mergeObjects(
+      this[PRIVATES].mapOfProvidedProperties,
+      aMapOfProvidedProperties
+    );
+
+    return new this
+      .constructor(mergedProperties);
+  }
+
+  // @override
+  toJSON() {
+    return this[PRIVATES]
+      .mapOfAdaptedProperties;
+  }
+
+  // @override
+  valueOf() {
+    return this[PRIVATES]
+      .mapOfAdaptedProperties;
   }
 }
 

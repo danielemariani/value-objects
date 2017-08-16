@@ -71,16 +71,12 @@ describe('ValueObject', () => {
 
       valueObject.property = 'ANOTHER_VALUE';
       valueObject.anotherProperty().a = 13;
-      valueObject.aNewProperty = 'NEW';
 
       expect(valueObject.aProperty())
         .toEqual('VALUE');
 
       expect(valueObject.anotherProperty())
         .toEqual({ a: 12 });
-
-      expect(valueObject.aNewProperty)
-        .toBeUndefined();
     });
   });
 
@@ -196,6 +192,58 @@ describe('ValueObject', () => {
 
       expect(anotherValueObject.equals(originalValueObject))
         .toBe(false);
+    });
+  });
+
+  describe('when extended', () => {
+    class Email extends ValueObject {
+    }
+
+    it('should create instances of the subclass', () => {
+      let email = new Email();
+
+      expect(email).toBeInstanceOf(Email);
+      expect(email).toBeInstanceOf(ValueObject);
+    });
+
+    describe('when required to create a new sublcass instance with values', () => {
+      it('should create a new instance of the subclass with the updated value', () => {
+        let email = new Email();
+        let newEmail = email.withValues({ address: 'asd@gmail.com' });
+
+        expect(newEmail).toBeInstanceOf(Email);
+        expect(newEmail).toBeInstanceOf(ValueObject);
+      });
+    });
+
+    describe('and the subclass overrides the constructor', () => {
+      class Address extends ValueObject {
+
+        constructor(aAddress) {
+          super({ address: aAddress });
+        }
+
+        withValues(aAddress) {
+          return new Address(aAddress);
+        }
+      }
+
+      it('should create instances of the subclass', () => {
+        let address = new Address('a address');
+
+        expect(address).toBeInstanceOf(Address);
+        expect(address).toBeInstanceOf(ValueObject);
+      });
+
+      describe('when required to create a new sublcass instance with values', () => {
+        it('should create a new instance of the subclass with the updated value', () => {
+          let address = new Address('a address');
+          let newAddress = address.withValues('asd@gmail.com');
+
+          expect(newAddress).toBeInstanceOf(Address);
+          expect(newAddress).toBeInstanceOf(ValueObject);
+        });
+      });
     });
   });
 });
