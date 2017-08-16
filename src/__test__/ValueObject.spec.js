@@ -178,4 +178,24 @@ describe('ValueObject', () => {
         .toBe(true);
     });
   });
+
+  describe('when required to change some of the values', () => {
+    it('should return a new value object with the updated value', () => {
+      let originalValueObject = new ValueObject({
+        aProperty: 'VALUE'
+      });
+
+      let anotherValueObject = originalValueObject
+        .withValues({ aProperty: 'NEW_VALUE' });
+
+      expect(anotherValueObject)
+        .toBeInstanceOf(ValueObject);
+
+      expect(anotherValueObject)
+        .not.toBe(originalValueObject);
+
+      expect(anotherValueObject.equals(originalValueObject))
+        .toBe(false);
+    });
+  });
 });

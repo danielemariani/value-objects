@@ -1,6 +1,4 @@
 
-require('./polyfills/objectEntriesPolyfill');
-
 const compareValueObjects = require('./usecases/compareValueObjects');
 const adaptProvidedProperties = require('./adapters/adaptProvidedProperties');
 const adaptPropertiesToPlainObject = require('./adapters/adaptPropertiesToPlainObject');
@@ -12,6 +10,10 @@ class ValueObject {
       aMapOfProvidedProperties
     );
 
+    let mapOfAdaptedProperties = makeValueImmutable(
+      adaptPropertiesToPlainObject(listOfAdaptedProperties)
+    );
+
     addPropertiesToInstance
       .call(this, listOfAdaptedProperties);
 
@@ -20,9 +22,7 @@ class ValueObject {
 
         serialize() {
           return JSON.stringify(
-            adaptPropertiesToPlainObject(
-              listOfAdaptedProperties
-            )
+            mapOfAdaptedProperties
           );
         },
 
@@ -33,16 +33,23 @@ class ValueObject {
           );
         },
 
+        withValues(aNewMapOfProvidedProperties) {
+          return new this.constructor(
+            mergeObjects(
+              aMapOfProvidedProperties,
+              aNewMapOfProvidedProperties
+            )
+          );
+        },
+
         // @override
         toJSON() {
-          return JSON.parse(this.serialize());
+          return mapOfAdaptedProperties;
         },
 
         // @override
         valueOf() {
-          return adaptPropertiesToPlainObject(
-            listOfAdaptedProperties
-          );
+          return mapOfAdaptedProperties;
         }
       })
     );
@@ -83,6 +90,10 @@ function addPropertyGetterToInstance(aPropertyDescriptor) {
 
 function makeValueImmutable(aValue) {
   return Object.freeze(aValue);
+}
+
+function mergeObjects(aObject, anotherObject) {
+  return Object.assign({}, aObject, anotherObject);
 }
 
 module.exports = ValueObject;
