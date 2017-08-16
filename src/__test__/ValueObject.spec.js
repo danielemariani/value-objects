@@ -4,69 +4,11 @@
 const ValueObject = require('../ValueObject');
 
 describe('ValueObject', () => {
-  describe('when provided a property', () => {
-    describe('and the property as a validator function', () => {
-      let aPropertyValidator;
-
-      beforeEach(() => {
-        aPropertyValidator = jest.fn();
-
-        aPropertyValidator
-          .mockReturnValue(true);
-      });
-
-      it('should call the validator when setting the property value', () => {
-        let valueObject = new ValueObject({
-          aProperty: {
-            value: 'VALUE',
-            validator: aPropertyValidator
-          }
-        });
-
-        expect(aPropertyValidator)
-          .toHaveBeenCalledWith('VALUE');
-      });
-
-      describe('and the validator function returns "true"', () => {
-        it('should set the value', () => {
-          let valueObject = new ValueObject({
-            aProperty: {
-              value: 'VALUE',
-              validator: aPropertyValidator
-            }
-          });
-
-          expect(valueObject.aProperty())
-            .toBe('VALUE');
-        });
-      });
-
-      describe('and the validator function does NOT return "true"', () => {
-        beforeEach(() => {
-          aPropertyValidator
-            .mockReturnValue(false);
-        });
-
-        it('should throw a TypeError', () => {
-          expect(() => {
-            new ValueObject({
-              aProperty: {
-                value: 'VALUE',
-                validator: aPropertyValidator
-              }
-            });
-          })
-            .toThrow(TypeError);
-        });
-      });
-    });
-  });
-
   describe('when handled', () => {
     it('should be immutable', () => {
       let valueObject = new ValueObject({
         aProperty: 'VALUE',
-        anotherProperty: { value: { a: 12 }}
+        anotherProperty: { a: 12 }
       });
 
       valueObject.property = 'ANOTHER_VALUE';
@@ -99,19 +41,19 @@ describe('ValueObject', () => {
     });
   });
 
+  describe('when NOT provided a map of properties', () => {
+    it('should default to a empty map of properties', () => {
+      let valueObject = new ValueObject();
+      expect(valueObject.valueOf()).toEqual({});
+    });
+  });
+
   describe('when requested to serialize itself', () => {
     it('should serialize all its properties', () => {
       let valueObject = new ValueObject({
         aProperty: 'VALUE',
-        anotherProperty: {
-          value: { a: '12' }
-        },
-        ['a-third-property']: {
-          value: 37,
-          validator: () => {
-            return true;
-          }
-        }
+        anotherProperty: { a: '12' },
+        ['a-third-property']: 37
       });
 
       let aSerializedObject = valueObject
@@ -130,7 +72,7 @@ describe('ValueObject', () => {
     it('should serialize as expected', () => {
       let valueObject = new ValueObject({
         aProperty: 'VALUE',
-        anotherProperty: { value: { a: '12' } }
+        anotherProperty: { a: '12' }
       });
 
       expect(JSON.stringify(valueObject))
@@ -138,11 +80,11 @@ describe('ValueObject', () => {
     });
   });
 
-  describe('when evaluationg the valueOf() of the ValueObject', () => {
+  describe('when asked its valueOf()', () => {
     it('should return the object value', () => {
       let valueObject = new ValueObject({
         aProperty: 'VALUE',
-        anotherProperty: { value: { a: '12' }, validator: () => { return true; } }
+        anotherProperty: { a: '12' }
       });
 
       expect(valueObject.valueOf())
@@ -176,7 +118,7 @@ describe('ValueObject', () => {
   });
 
   describe('when required to change some of the values', () => {
-    it('should return a new value object with the updated value', () => {
+    it('should return a new value object with the updated values', () => {
       let originalValueObject = new ValueObject({
         aProperty: 'VALUE'
       });
@@ -192,58 +134,6 @@ describe('ValueObject', () => {
 
       expect(anotherValueObject.equals(originalValueObject))
         .toBe(false);
-    });
-  });
-
-  describe('when extended', () => {
-    class Email extends ValueObject {
-    }
-
-    it('should create instances of the subclass', () => {
-      let email = new Email();
-
-      expect(email).toBeInstanceOf(Email);
-      expect(email).toBeInstanceOf(ValueObject);
-    });
-
-    describe('when required to create a new sublcass instance with values', () => {
-      it('should create a new instance of the subclass with the updated value', () => {
-        let email = new Email();
-        let newEmail = email.withValues({ address: 'asd@gmail.com' });
-
-        expect(newEmail).toBeInstanceOf(Email);
-        expect(newEmail).toBeInstanceOf(ValueObject);
-      });
-    });
-
-    describe('and the subclass overrides the constructor', () => {
-      class Address extends ValueObject {
-
-        constructor(aAddress) {
-          super({ address: aAddress });
-        }
-
-        withValues(aAddress) {
-          return new Address(aAddress);
-        }
-      }
-
-      it('should create instances of the subclass', () => {
-        let address = new Address('a address');
-
-        expect(address).toBeInstanceOf(Address);
-        expect(address).toBeInstanceOf(ValueObject);
-      });
-
-      describe('when required to create a new sublcass instance with values', () => {
-        it('should create a new instance of the subclass with the updated value', () => {
-          let address = new Address('a address');
-          let newAddress = address.withValues('asd@gmail.com');
-
-          expect(newAddress).toBeInstanceOf(Address);
-          expect(newAddress).toBeInstanceOf(ValueObject);
-        });
-      });
     });
   });
 });
