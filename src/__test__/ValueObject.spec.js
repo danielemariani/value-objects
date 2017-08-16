@@ -4,8 +4,6 @@
 const ValueObject = require('../ValueObject');
 
 describe('ValueObject', () => {
-  let valueObject;
-
   describe('when provided a property', () => {
     describe('and the property as a validator function', () => {
       let aPropertyValidator;
@@ -18,7 +16,7 @@ describe('ValueObject', () => {
       });
 
       it('should call the validator when setting the property value', () => {
-        valueObject = new ValueObject({
+        let valueObject = new ValueObject({
           aProperty: {
             value: 'VALUE',
             validator: aPropertyValidator
@@ -31,7 +29,7 @@ describe('ValueObject', () => {
 
       describe('and the validator function returns "true"', () => {
         it('should set the value', () => {
-          valueObject = new ValueObject({
+          let valueObject = new ValueObject({
             aProperty: {
               value: 'VALUE',
               validator: aPropertyValidator
