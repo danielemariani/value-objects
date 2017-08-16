@@ -1,6 +1,6 @@
 {
   "name": "value-objects",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A js library to work with immutable value objects",
   "main": "src",
   "scripts": {
