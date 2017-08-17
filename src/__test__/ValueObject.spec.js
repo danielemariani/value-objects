@@ -67,6 +67,27 @@ describe('ValueObject', () => {
           ['a-third-property']: 37
         }));
     });
+
+    describe('when holds properties with a toJSON method', () => {
+      it('should use their toJSON method to serialize them', () => {
+        let value = new ValueObject({
+          a: 'A',
+        });
+
+        let anotherValue = new ValueObject({
+          b: 'B',
+          c: value
+        });
+
+        console.log(anotherValue.serialize());
+
+        expect(anotherValue.serialize())
+          .toEqual(JSON.stringify({
+            b: 'B',
+            c: { a: 'A' }
+          }));
+      });
+    });
   });
 
   describe('when passed to JSON.stringify() method', () => {
