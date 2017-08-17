@@ -52,14 +52,10 @@ class ValueObject {
       this[PRIVATES].mapOfProvidedProperties
     );
 
-    let providedProperties = adaptPropertiesToPlainObject(
-      adaptProvidedProperties(aMapOfProvidedProperties)
-    );
-
     return new this.constructor(
       Object.assign(
-        currentProperties,
-        providedProperties
+        this[PRIVATES].mapOfProvidedProperties,
+        aMapOfProvidedProperties
       )
     );
   }
