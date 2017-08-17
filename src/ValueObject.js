@@ -16,27 +16,27 @@ class ValueObject {
   constructor(aMapOfProvidedProperties = {}) {
     let mapOfProvidedProperties = aMapOfProvidedProperties;
 
-    let listOfAdaptedProperties = adaptProvidedProperties(
+    let listOfProperties = adaptProvidedProperties(
       aMapOfProvidedProperties
     );
 
-    let mapOfAdaptedProperties = makeValueImmutable(
-      adaptPropertiesToPlainObject(listOfAdaptedProperties)
+    let mapOfProperties = makeValueImmutable(
+      adaptPropertiesToPlainObject(listOfProperties)
     );
 
     this[PRIVATES] = {
       mapOfProvidedProperties,
-      listOfAdaptedProperties,
-      mapOfAdaptedProperties
+      listOfProperties,
+      mapOfProperties
     };
 
     addPropertiesToInstance
-      .call(this, listOfAdaptedProperties);
+      .call(this, listOfProperties);
   }
 
   serialize() {
     return JSON.stringify(
-      this[PRIVATES].mapOfAdaptedProperties
+      this[PRIVATES].mapOfProperties
     );
   }
 
@@ -48,32 +48,32 @@ class ValueObject {
   }
 
   withValues(aMapOfProvidedProperties) {
-    let properties = cloneValue(
+    let currentProperties = cloneValue(
       this[PRIVATES].mapOfProvidedProperties
     );
 
-    adaptProvidedProperties(aMapOfProvidedProperties)
-      .forEach(aProperty => {
-        let propertyName = aProperty.name;
-        let newPropertyValue = aProperty.value;
-        let originalProperty = properties[propertyName];
+    let providedProperties = adaptPropertiesToPlainObject(
+      adaptProvidedProperties(aMapOfProvidedProperties)
+    );
 
-        properties[propertyName] = newPropertyValue;
-      });
-
-    return new this.constructor(properties);
+    return new this.constructor(
+      Object.assign(
+        currentProperties,
+        providedProperties
+      )
+    );
   }
 
   // @override
   toJSON() {
     return this[PRIVATES]
-      .mapOfAdaptedProperties;
+      .mapOfProperties;
   }
 
   // @override
   valueOf() {
     return this[PRIVATES]
-      .mapOfAdaptedProperties;
+      .mapOfProperties;
   }
 }
 
