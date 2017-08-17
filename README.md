@@ -26,12 +26,19 @@ let valueObject = new ValueObject({ a: { c: 10 }});
 valueObject.a().c = 12; // Silent fail, throws in strict mode
 valueObject.a(); // --> { c: 10 }
 
-// Compare by values
+// Change some values, return a new instance
+let valueObject = new ValueObject({ a: 'A', b: 'B' });
+let newValueObject = valueObject.withValues({ a: 'NEW' })
+
+newValueObject.a(); --> // 'NEW'
+newValueObject.b(); --> // 'B'
+
+// Compare by value
 let valueObject = new ValueObject({ a: 'A', b: 'B' });
 let equalValue = new ValueObject({ a: 'A', b: 'B' });
 let differentValue = new ValueObject({ a: 'A', b: 'OTHER' });
 
-console.log(valueObject.equals(equalValue)); // --> true - Equality by values
+console.log(valueObject.equals(equalValue)); // --> true - Equality by value
 console.log(valueObject.equals(differentValue)); // --> false - Different values
 
 // Serialize
@@ -39,5 +46,25 @@ let valueObject = new ValueObject({ a: 'A', b: 'B' });
 
 console.log(valueObject.serialize()); // --> JSON "{ \"a\": \"A\", \"b\": \"B\" }"
 console.log(JSON.stringify(valueObject)) // --> same JSON "{ \"a\": \"A\", \"b\": \"B\" }"
+
+==== EXTEND ====
+class Email extends ValueObject {
+
+ static validators() {
+  return {
+   address(address) {
+    return /^\w+@\w+\..{2,3}(.{2,3})?$/.test(address);
+   }
+  };
+ }
+ 
+ constructor({ address }) {
+  super({ address });
+ }
+ 
+}
+
+let email = new Email({ address: 'example@gmail.com' });
+let email = new Email({ address: 'not an email' }); // --> Throws validation error
 ```
  
