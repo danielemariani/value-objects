@@ -29,7 +29,7 @@ valueObject.a(); // --> { c: 10 }
 // Compare by values
 let valueObject = new ValueObject({ a: 'A', b: 'B' });
 let equalValue = new ValueObject({ a: 'A', b: 'B' });
-let differentValue = new ValueObject({ a: 'A', b: 'B' });
+let differentValue = new ValueObject({ a: 'A', b: 'OTHER' });
 
 console.log(valueObject.equals(equalValue)); // --> true - Equality by values
 console.log(valueObject.equals(differentValue)); // --> false - Different values
