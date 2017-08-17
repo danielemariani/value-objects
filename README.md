@@ -47,7 +47,7 @@ let valueObject = new ValueObject({ a: 'A', b: 'B' });
 console.log(valueObject.serialize()); // --> JSON "{ \"a\": \"A\", \"b\": \"B\" }"
 console.log(JSON.stringify(valueObject)) // --> same JSON "{ \"a\": \"A\", \"b\": \"B\" }"
 
-==== EXTEND ====
+// ==== EXTEND ====
 class Email extends ValueObject {
 
  static validators() {
