@@ -35,9 +35,9 @@ console.log(valueObject.equals(equalValue)); // --> true - Equality by values
 console.log(valueObject.equals(differentValue)); // --> false - Different values
 
 // Serialize
+let valueObject = new ValueObject({ a: 'A', b: 'B' });
+
 console.log(valueObject.serialize()); // --> JSON "{ \"a\": \"A\", \"b\": \"B\" }"
 console.log(JSON.stringify(valueObject)) // --> same JSON "{ \"a\": \"A\", \"b\": \"B\" }"
-
-let anotherValueObject = valueObject.withValues({ a: 'NEW' });
 ```
  
