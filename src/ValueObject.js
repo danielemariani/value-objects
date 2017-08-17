@@ -35,9 +35,7 @@ class ValueObject {
   }
 
   serialize() {
-    return JSON.stringify(
-      this[PRIVATES].mapOfProperties
-    );
+    return JSON.stringify(this);
   }
 
   equals(aValueObject) {
@@ -62,8 +60,7 @@ class ValueObject {
 
   // @override
   toJSON() {
-    return this[PRIVATES]
-      .mapOfProperties;
+    return this.valueOf();
   }
 
   // @override
@@ -87,7 +84,10 @@ function addPropertyToInstance(aPropertyDescriptor) {
 
 function addPropertyGetterToInstance(aPropertyDescriptor) {
   let propertyName = aPropertyDescriptor.name;
-  let propertyValue = makeValueImmutable(aPropertyDescriptor.value);
+
+  let propertyValue = makeValueImmutable(
+    aPropertyDescriptor.value
+  );
 
   Object.defineProperty(this, propertyName, {
     value: () => { return propertyValue; }

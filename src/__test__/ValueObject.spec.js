@@ -79,8 +79,6 @@ describe('ValueObject', () => {
           c: value
         });
 
-        console.log(anotherValue.serialize());
-
         expect(anotherValue.serialize())
           .toEqual(JSON.stringify({
             b: 'B',
